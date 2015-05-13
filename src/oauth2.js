@@ -22,8 +22,6 @@ module.exports = function(p, callback){
 	if(p.code){
 		post = {
 			code : p.code,
-			client_id : p.client_id || p.id,
-			client_secret : p.client_secret,
 			grant_type : 'authorization_code',
 			redirect_uri : encodeURIComponent(p.redirect_uri)
 		};
@@ -31,8 +29,6 @@ module.exports = function(p, callback){
 	else if(p.refresh_token){
 		post = {
 			refresh_token : p.refresh_token,
-			client_id : p.client_id || p.id,
-			client_secret : p.client_secret,
 			grant_type : 'refresh_token',
 		};
 	}
@@ -55,11 +51,12 @@ module.exports = function(p, callback){
 
 	// Create the request
 	var r = url.parse( grant_url );
-	r.method = 'POST';
-	r.headers = {
-		'Content-length': post.length,
-		'Content-type':'application/x-www-form-urlencoded'
-	};
+	r.method = "POST";
+    r.headers = {
+        "Content-length": post.length,
+        "Content-type": "application/x-www-form-urlencoded",
+        "Authorization": "Basic " + new Buffer((p.client_id || p.id) + ":" + p.client_secret).toString("base64")
+    };
 
 	//opts.body = post;
 	request( r, post, function(err,res,body){
